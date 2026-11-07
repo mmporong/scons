@@ -27,6 +27,9 @@
 Verify that use of a VariantDir works when the -n option is used (and
 the VariantDir, therefore, isn't actually created) when both duplicate=0
 and duplicate=1 are used.
+
+Also verify that -n leaves a stale copy in the VariantDir alone when its
+source file has gone away, while a real build removes it (issue #3010).
 """
 
 import os
@@ -85,5 +88,20 @@ test.run()
 
 test.must_match(['build0', 'a', 'file.out'], "a/file.in\n")
 test.must_match(['build1', 'file.out'], "a/file.in\n")
+
+# The source file goes away: -n reports the same error as a real build,
+# but only the real build may remove the stale copy in the VariantDir.
+test.unlink(a_file_in)
+
+expect = """\
+scons: *** [%(build1_file_out)s] Source `%(build1_file_in)s' not found, \
+needed by target `%(build1_file_out)s'.
+""" % locals()
+
+test.run(arguments='-Q -n build1', stderr=expect, status=2)
+test.must_match(['build1', 'file.in'], "a/file.in\n")
+
+test.run(arguments='-Q build1', stderr=expect, status=2)
+test.must_not_exist(['build1', 'file.in'])
 
 test.pass_test()

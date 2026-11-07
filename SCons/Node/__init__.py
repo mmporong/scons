@@ -48,6 +48,7 @@ from collections.abc import Callable
 from itertools import chain, zip_longest
 from typing import Any, TYPE_CHECKING
 
+import SCons.Action
 import SCons.Debug
 import SCons.Executor
 import SCons.Memoize
@@ -163,7 +164,9 @@ def exists_file(node) -> bool:
                     # copy remains in the variant directory.
                     if print_duplicate:
                         print("dup: no src for %s, unlinking old variant copy" % node)
-                    if exists_base(node) or node.islink():
+                    stale = exists_base(node) or node.islink()
+                    # With -n the file system must be left alone.
+                    if stale and SCons.Action.execute_actions:
                         node.fs.unlink(node.get_internal_path())
                     # Return None explicitly because the Base.exists() call
                     # above will have cached its value if the file existed.

@@ -78,6 +78,11 @@ RELEASE  VERSION/DATE TO BE FILLED IN LATER
       threads could run. This made test/option/stack-size.py intermittently
       report an extra "Setting stack size failed" warning.
 
+  From Lim-jooyoung:
+    - The -n / --no-exec option no longer removes a stale copy from a
+      VariantDir when its source file has gone away (issue #3010). The
+      copy is still removed by a real build.
+
   From Adam Matthews:
     - SConstruct and SConscript files (including one read from stdin),
       site_init.py and variables files are no longer compiled with the

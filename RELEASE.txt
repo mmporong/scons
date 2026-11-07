@@ -100,6 +100,10 @@ FIXES
 
 - Workaround issue where D compiler ldc2 can't find linker.
 
+- The -n / --no-exec option no longer removes a stale copy from a VariantDir
+  when its source file has gone away (issue #3010). The copy is still removed
+  by a real build.
+
 IMPROVEMENTS
 ------------
 
